@@ -1,57 +1,73 @@
 "use client";
 
-import {
-  fetchAddressTransactions,
-  type FetchAddressTransactionsResponse,
-} from "@/lib/fetch-address-transactions";
+import React, { useEffect, useState } from "react";
 import { TransactionDetail } from "./txn-details";
-import { useState } from "react";
+import { useStacks } from "@/hooks/use-stacks";
+import { fetchMainnetTransactions, fetchTestnetTransactions } from "@/lib/fetch-address-transactions";
+import { FetchTransactionsResponse } from "@/lib/fetch-address-transactions";
 
 interface TransactionsListProps {
   address: string;
-  transactions: FetchAddressTransactionsResponse;
+  transactions: any; 
 }
 
-export function TransactionsList({
-  address,
-  transactions,
-}: TransactionsListProps) {
-  const [allTxns, setAllTxns] = useState(transactions);
+export function TransactionsList({ address }: TransactionsListProps) {
+  const { network } = useStacks();
+  const [transactions, setTransactions] = useState<FetchTransactionsResponse | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Load another 20 txns
-  async function loadMoreTxns() {
-    // The new offset to fetch transaction is the offset we used
-    // in the last request + the number of txns we fetched previously
-    // e.g. if initially we fetched offset = 0 with limit = 20
-    // the new offset would be 0 + 20 = 20 to fetch transactions
-    // 20 to 40
-    const newTxns = await fetchAddressTransactions({
-      address,
-      offset: allTxns.offset + allTxns.limit,
-    });
+  useEffect(() => {
+    async function fetchTxns() {
+      try {
+        setLoading(true);
+        const data =
+          network === "mainnet"
+            ? await fetchMainnetTransactions(address)
+            : await fetchTestnetTransactions(address);
+        setTransactions(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    setAllTxns({
-      ...newTxns,
-      results: [...allTxns.results, ...newTxns.results],
-    });
-  }
+    fetchTxns();
+  }, [address, network]);
+
+  console.log(transactions)
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col border rounded-md divide-y border-gray-800 divide-gray-800">
-        {allTxns.results.map((tx) => (
-          <div key={tx.tx.tx_id}>
-            <TransactionDetail result={tx} />
+      <div className="flex justify-end mb-4">
+        {network === "mainnet" ? (
+          <div className="flex items-center">
+            <div className="bg-green-700 rounded-full w-[20px] h-[20px]" />
+            <p className="ml-3">Mainnet</p>
           </div>
-        ))}
+        ) : (
+          <div className="flex items-center">
+            <div className="bg-orange-500 rounded-full w-[20px] h-[20px]" />
+            <p className="ml-3">Testnet</p>
+          </div>
+        )}
       </div>
-      <button
-        type="button"
-        className="px-4 py-2 rounded-lg w-fit border border-gray-800 mx-auto text-center hover:bg-gray-900 transition-all"
-        onClick={loadMoreTxns}
-      >
-        Load More
-      </button>
+
+      {loading && <div className="text-gray-500 text-center">Loading...</div>}
+
+      {!loading && transactions && (
+        <div className="flex flex-col border rounded-md divide-y border-gray-800 divide-gray-800">
+          {transactions.results?.length ? (
+            transactions.results.map((tx, index) => (
+              <div key={index}>
+                <TransactionDetail result={tx} />
+              </div>
+            ))
+          ) : (
+            <div className="p-4 text-gray-500 text-center">No transactions found</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

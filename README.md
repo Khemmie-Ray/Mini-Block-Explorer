@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Here’s a fleshed-out, professional-sounding version of your **README** that keeps your voice and purpose clear, while giving it a more complete structure:
 
-## Getting Started
+---
 
-First, run the development server:
+# 🧭 Mini Explorer
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Mini Explorer** is a lightweight blockchain explorer built for the **Stacks network**.
+It allows users to easily connect their **mainnet** or **testnet** wallets and view transaction details for any address.
+The goal is to provide a simple and developer-friendly interface for exploring activity on Stacks without the complexity of a full-scale explorer.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* **Wallet Connection:** Connect to either Stacks mainnet or testnet using the latest version of `stacks/connect`.
+* **Address Lookup:** Search for any Stacks address and view its transaction history in real time.
+* **Network Detection:** Automatically detects which network (mainnet or testnet) the user is connected to.
+* **Responsive UI:** Built with modern web technologies for a clean and accessible experience.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **[Hiro API](https://docs.hiro.so/api)** – for fetching blockchain data and transaction details.
+* **[Stacks/Connect](https://stacks.js.org/)** – for wallet integration and user authentication.
+* **[Next.js](https://nextjs.org/)** – framework for building fast, scalable frontend applications.
+* **WalletConnect** – for seamless connection to Stacks-compatible wallets.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🧩 Getting Started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clone the repository
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   git clone https://github.com/Khemmie-Ray/Mini-Block-Explorer.git
+   cd mini-explorer
+   ```
+
+2. Install dependencies
+
+   ```bash
+   npm install
+   # or
+   yarn 
+   ```
+
+3. Create a `.env.local` file and add your Hiro API endpoint if needed.
+   Example:
+
+   ```
+   NEXT_PUBLIC_STACKS_API_URL=https://api.testnet.hiro.so
+   ```
+
+4. Run the development server
+
+   ```bash
+   npm run dev
+   or
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) to see the app in action.
+
