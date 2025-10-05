@@ -1,57 +1,71 @@
-import {
-  AppConfig,
-  showConnect,
-  type UserData,
-  UserSession,
-} from "@stacks/connect";
-import { useEffect, useState } from "react";
+"use client"
+
+import { useState, useEffect } from "react";
+import { connect, disconnect, isConnected, getLocalStorage, request } from "@stacks/connect";
 
 export function useStacks() {
-  // Initially when the user is not logged in, userData is null
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [network, setNetwork] = useState<"mainnet" | "testnet" | null>(null);
 
-  // create application config that allows
-  // storing authentication state in browser's local storage
-  const appConfig = new AppConfig(["store_write"]);
+  const inferNetworkFromAddress = (addr?: string): "mainnet" | "testnet" | null => {
+    if (!addr) return null;
+    if (addr.startsWith("ST")) return "testnet";
+    if (addr.startsWith("SP") || addr.startsWith("SM")) return "mainnet";
+    return null;
+  };
 
-  // creating a new user session based on the application config
-  const userSession = new UserSession({ appConfig });
-
-  function connectWallet() {
-    showConnect({
-      appDetails: {
-        name: "Stacks Account History",
-        icon: "https://cryptologos.cc/logos/stacks-stx-logo.png",
-      },
-      onFinish: () => {
-        // reload the webpage when wallet connection succeeds
-        // to ensure that the user session gets populated from local storage
-        window.location.reload();
-      },
-      userSession,
-    });
-  }
-
-  function disconnectWallet() {
-    // sign out the user and close their session
-    // also clear out the user data
-    userSession.signUserOut();
-    setUserData(null);
-  }
-
-  // When the page first loads, if the user is already signed in,
-  // set the userData
-  // If the user has a pending sign-in instead, resume the sign-in flow
-  useEffect(() => {
-    if (userSession.isUserSignedIn()) {
-      setUserData(userSession.loadUserData());
-    } else if (userSession.isSignInPending()) {
-      userSession.handlePendingSignIn().then((userData) => {
-        setUserData(userData);
-      });
+  const fetchNetwork = async () => {
+    try {
+      const res = await request("stx_getNetworks" as any);
+      if (res?.network?.name) {
+        setNetwork(res.network.name as "mainnet" | "testnet");
+      }
+    } catch {
+      // fallback to address inference if unsupported
+      const data = getLocalStorage();
+      const addr = data?.addresses?.stx?.[0]?.address;
+      setNetwork(inferNetworkFromAddress(addr));
     }
+  };
+
+  // Connect wallet
+  const connectWallet = async () => {
+    try {
+      const response = await connect({
+        forceWalletSelect: true,
+        walletConnectProjectId: process.env.NEXT_PUBLIC_PROJECTID,
+      });
+
+      const data = getLocalStorage();
+      const stxAddress = data?.addresses?.stx?.[0]?.address || null;
+      setAddress(stxAddress);
+    } catch (err) {
+      console.error("Wallet connection failed:", err);
+    }
+  };
+
+  const disconnectWallet = async () => {
+    disconnect();
+    setAddress(null);
+  };
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      const connected = isConnected();
+      if (connected) {
+        const data = getLocalStorage();
+        const stxAddress = data?.addresses?.stx?.[0]?.address || null;
+        setAddress(stxAddress);
+        await fetchNetwork()
+      }
+    };
+    checkConnection();
   }, []);
 
-  // return the user data, connect wallet function, and disconnect wallet function
-  return { userData, connectWallet, disconnectWallet };
+  return {
+    address,
+    network,
+    connectWallet,
+    disconnectWallet,
+  };
 }

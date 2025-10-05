@@ -1,23 +1,25 @@
 import { TransactionsList } from "@/components/txns-list";
-import { fetchAddressTransactions } from "@/lib/fetch-address-transactions";
+import { fetchMainnetTransactions, fetchTestnetTransactions } from "@/lib/fetch-address-transactions";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 
 export default async function Activity({
   params,
 }: {
-  params: Promise<{ address: string }>;
+  params: { address: string }; 
 }) {
-  // params contains parameters we can parse from the URL Route
-  const { address } = await params;
-
-  // Once we know the address, we fetch the initial 20 transactions
-  const initialTransactions = await fetchAddressTransactions({ address });
+  const { address } = params;
+  const network = address.startsWith("SP") ? "mainnet" : "testnet";
+  const initialTransactions =
+    network === "mainnet"
+      ? await fetchMainnetTransactions(address)
+      : await fetchTestnetTransactions(address);
 
   return (
-    <main className="flex h-[100vh-4rem] flex-col p-8 gap-8">
+    <main className="flex flex-col p-8 gap-8 min-h-[100vh]">
       <div className="flex items-center gap-4">
-        <h1 className="text-3xl font-bold">{address}</h1>
+        <h1 className="text-3xl font-bold break-all">{address}</h1>
+
         <Link
           href={`https://explorer.hiro.so/address/${address}`}
           target="_blank"

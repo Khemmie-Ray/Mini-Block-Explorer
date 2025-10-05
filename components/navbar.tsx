@@ -15,14 +15,15 @@ export function Navbar() {
   const [searchAddress, setSearchAddress] = useState("");
 
   // our useStacks hook
-  const { userData, connectWallet, disconnectWallet } = useStacks();
+  const { address, connectWallet, disconnectWallet } = useStacks();
+  console.log(address)
 
   // function that validates the user inputted address
   // If it is valid, we will redirect the user to the txn history page
   function handleSearch() {
-    if (!searchAddress.startsWith("SP")) {
-      return alert("Please enter a mainnet Stacks address");
-    }
+    // if (!searchAddress.startsWith("SP") || (!searchAddress.startsWith("ST"))) {
+    //   return alert("Please enter a mainnet Stacks address");
+    // }
 
     try {
       // createAddress comes from @stacks/transactions
@@ -44,7 +45,7 @@ export function Navbar() {
 
       <input
         type="text"
-        placeholder="SP..."
+        placeholder="Enter a wallet address"
         className="w-96 rounded-lg bg-gray-700  px-4 py-2 text-sm"
         onChange={(e) => setSearchAddress(e.target.value)}
         onKeyDown={(e) => {
@@ -56,18 +57,18 @@ export function Navbar() {
       />
 
       <div className="flex items-center gap-2">
-        {/* If userData exists, show the disconnect wallet button, else show the connect wallet button */}
-        {userData ? (
+        {/* If address exists, show the disconnect wallet button, else show the connect wallet button */}
+        {address ? (
           <div className="flex items-center gap-2">
             {/* button for quickly viewing the user's own transaction history */}
             <button
               type="button"
               onClick={() =>
-                router.push(`/${userData.profile.stxAddress.mainnet}`)
+                router.push(`/${address}`)
               }
               className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              View {abbreviateAddress(userData.profile.stxAddress.mainnet)}
+              View {abbreviateAddress(address)}
             </button>
             <button
               type="button"

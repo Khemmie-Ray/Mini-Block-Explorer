@@ -1,13 +1,16 @@
+
 interface FetchAddressTransactionsArgs {
   address: string;
   offset?: number;
+  limit?: number;
+  network?: "mainnet" | "testnet";
 }
 
-export interface FetchAddressTransactionsResponse {
+export interface FetchTransactionsResponse {
   limit: number;
   offset: number;
   total: number;
-  results: Array<{
+  results: {
     tx: Transaction;
     stx_sent: string;
     stx_received: string;
@@ -16,7 +19,7 @@ export interface FetchAddressTransactionsResponse {
       ft: TransactionEvent;
       nft: TransactionEvent;
     };
-  }>;
+  }[];
 }
 
 interface BaseTransaction {
@@ -81,18 +84,32 @@ interface TransactionEvent {
   burn: number;
 }
 
-export async function fetchAddressTransactions({
-  address,
-  offset = 0,
-}: FetchAddressTransactionsArgs): Promise<FetchAddressTransactionsResponse> {
-  const url = `https://api.hiro.so/extended/v2/addresses/${address}/transactions?limit=20&offset=${offset}`;
+export async function fetchMainnetTransactions(address: string, offset = 0, limit = 20): Promise<FetchTransactionsResponse> {
+  const baseUrl = process.env.NEXT_PUBLIC_MAINNET_URL;
 
-  const response = await fetch(url);
+  const res = await fetch(
+    `${baseUrl}/extended/v1/address/${address}/transactions?offset=${offset}&limit=${limit}`
+  );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch address transactions");
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Mainnet fetch failed: ${res.status} ${res.statusText} — ${errorText}`);
   }
 
-  const data = await response.json();
-  return data as FetchAddressTransactionsResponse;
+  return (await res.json()) as FetchTransactionsResponse;
+}
+
+export async function fetchTestnetTransactions(address: string, offset = 0, limit = 20): Promise<FetchTransactionsResponse> {
+  const baseUrl = process.env.NEXT_PUBLIC_TESTNET_URL;
+
+  const res = await fetch(
+    `${baseUrl}/extended/v1/address/${address}/transactions?offset=${offset}&limit=${limit}`
+  );
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Testnet fetch failed: ${res.status} ${res.statusText} — ${errorText}`);
+  }
+
+  return (await res.json()) as FetchTransactionsResponse;
 }
