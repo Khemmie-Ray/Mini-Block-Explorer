@@ -2,12 +2,9 @@
 
 import { useStacks } from "@/hooks/use-stacks";
 import { redirect } from "next/navigation";
-import { isConnected } from "@stacks/connect";
 
 export default function Home() {
   const { address } = useStacks();
-  const connected = isConnected()
-  console.log(connected)
 
   if (!address) {
     return (
