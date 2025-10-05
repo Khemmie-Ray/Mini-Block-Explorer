@@ -1,8 +1,4 @@
-Here’s a fleshed-out, professional-sounding version of your **README** that keeps your voice and purpose clear, while giving it a more complete structure:
-
----
-
-# 🧭 Mini Explorer
+# Mini Explorer
 
 **Mini Explorer** is a lightweight blockchain explorer built for the **Stacks network**.
 It allows users to easily connect their **mainnet** or **testnet** wallets and view transaction details for any address.
@@ -10,16 +6,15 @@ The goal is to provide a simple and developer-friendly interface for exploring a
 
 ---
 
-## 🚀 Features
+## Features
 
 * **Wallet Connection:** Connect to either Stacks mainnet or testnet using the latest version of `stacks/connect`.
 * **Address Lookup:** Search for any Stacks address and view its transaction history in real time.
 * **Network Detection:** Automatically detects which network (mainnet or testnet) the user is connected to.
-* **Responsive UI:** Built with modern web technologies for a clean and accessible experience.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **[Hiro API](https://docs.hiro.so/api)** – for fetching blockchain data and transaction details.
 * **[Stacks/Connect](https://stacks.js.org/)** – for wallet integration and user authentication.
@@ -45,11 +40,11 @@ The goal is to provide a simple and developer-friendly interface for exploring a
    yarn 
    ```
 
-3. Create a `.env.local` file and add your Hiro API endpoint if needed.
+3. Create a `.env.local` file using the example template.
    Example:
 
    ```
-   NEXT_PUBLIC_STACKS_API_URL=https://api.testnet.hiro.so
+   NEXT_PUBLIC_PROJECTID=b4*************
    ```
 
 4. Run the development server
