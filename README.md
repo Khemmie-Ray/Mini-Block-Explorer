@@ -23,7 +23,7 @@ The goal is to provide a simple and developer-friendly interface for exploring a
 
 ---
 
-## 🧩 Getting Started
+## Getting Started
 
 1. Clone the repository
 
